@@ -1,3 +1,29 @@
+???
+
+  * Fixed: ISO C90 warnings (bug #20)
+  * Soname: 1:16:0
+
+2013-12-20 -- 0.8.0
+
+  * Fixed: Resolution of relative URI "/" broken
+      Thanks to Mo McRoberts for the patch!
+  * Fixed: uriAddBaseUri produced uriUri objects with both host
+      and the absolutePath flag set (while the absolutePath flag
+      should only be true for URI objects without a host) when
+      resolving absolute URIs like "/" or "/foo/bar".
+      Now the absolutePath flag is set to URI_FALSE and an empty
+      segment is added as necessary
+  * Fixed: .errorCode could end up unset, previously
+      Thanks to Radu Hociung for the patch!  (bug #16)
+  * Fixed: Resolve use of non-POSIX "sed -r" used when building
+     documentation  (bug #18)
+     Thanks to Ryan Schmidt for reporting!
+  * Fixed: Build DLL with -no-undefined on Windows
+      Thanks to Michel Zou for the patch!  (bug #19)
+  * Added: Command line tool "uriparse"
+      Thanks to Radu Hociung for coding!  (feature request #3)
+  * Soname: 1:15:0
+
 2013-08-24 -- 0.7.9
 
   * Fixed: Error position ended up as NULL for some syntax errors.

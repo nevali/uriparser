@@ -12,6 +12,13 @@ check_PROGRAMS = test/uriparser_test
 TESTS = test/uriparser_test
 endif
 
+bin_PROGRAMS = uriparse
+uriparse_SOURCES = tool/uriparse.c
+
+uriparse_CFLAGS = -Iinclude
+uriparse_LDADD = $(top_builddir)/liburiparser.la
+uriparse_DEPENDENCIES = $(top_builddir)/liburiparser.la
+
 
 pkgconfig_DATA = liburiparser.pc
 
@@ -27,7 +34,10 @@ pkginclude_HEADERS = \
 	include/uriparser/UriIp4.h
 
 
-liburiparser_la_LDFLAGS = -version-info 1:14:0
+liburiparser_la_LDFLAGS = -version-info 1:16:0
+if WIN32
+liburiparser_la_LDFLAGS += -no-undefined
+endif
 
 liburiparser_la_SOURCES = \
 	src/UriCommon.c \

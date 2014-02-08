@@ -101,6 +101,7 @@ public:
 		TEST_ADD(UriSuite::testQueryListPair)
 		TEST_ADD(UriSuite::testQueryDissection_Bug3590761)
 		TEST_ADD(UriSuite::testFreeCrash_Bug20080827)
+		TEST_ADD(UriSuite::testParseInvalid_Bug16)
 	}
 
 private:
@@ -144,6 +145,8 @@ Rule                                | Example | hostSet | absPath | emptySeg
 1) URI = scheme ":" hier-part ...   |         |         |         |
    1) "//" authority path-abempty   | "s://"  | true    |   false |   false
                                     | "s:///" | true    |   false | true
+                                    | "s://a" | true    |   false | false
+                                    | "s://a/"| true    |   false | true
    2) path-absolute                 | "s:/"   |   false | true    |   false
    3) path-rootless                 | "s:a"   |   false |   false |   false
                                     | "s:a/"  |   false |   false | true
@@ -160,6 +163,8 @@ Rule                                | Example | hostSet | absPath | emptySeg
 		*/
 		TEST_ASSERT(testDistinctionHelper("s://", true, false, false));
 		TEST_ASSERT(testDistinctionHelper("s:///", true, false, true));
+		TEST_ASSERT(testDistinctionHelper("s://a", true, false, false));
+		TEST_ASSERT(testDistinctionHelper("s://a/", true, false, true));
 		TEST_ASSERT(testDistinctionHelper("s:/", false, true, false));
 		TEST_ASSERT(testDistinctionHelper("s:a", false, false, false));
 		TEST_ASSERT(testDistinctionHelper("s:a/", false, false, true));
@@ -1095,6 +1100,10 @@ Rule                                | Example | hostSet | absPath | emptySeg
 		TEST_ASSERT(testAddBaseHelper(L"http://a/b/c/d;p?q", L"g#s/./x", L"http://a/b/c/g#s/./x"));
 		TEST_ASSERT(testAddBaseHelper(L"http://a/b/c/d;p?q", L"g#s/../x", L"http://a/b/c/g#s/../x"));
 		TEST_ASSERT(testAddBaseHelper(L"http://a/b/c/d;p?q", L"http:g", L"http:g"));
+
+		// Bug related to absolutePath flag set despite presence of host
+		TEST_ASSERT(testAddBaseHelper(L"http://a/b/c/d;p?q", L"/", L"http://a/"));
+		TEST_ASSERT(testAddBaseHelper(L"http://a/b/c/d;p?q", L"/g/", L"http://a/g/"));
 	}
 
 	bool testToStringHelper(const wchar_t * text) {
@@ -1715,6 +1724,20 @@ Rule                                | Example | hostSet | absPath | emptySeg
 		uriFreeUriMembersA(&absoluteDest); // Crashed here
 	}
 
+	void testParseInvalid_Bug16() {
+		UriParserStateA stateA;
+		UriUriA uriA;
+		stateA.uri = &uriA;
+		const char * const input = "A>B";
+
+		const int res = uriParseUriA(&stateA, input);
+
+		TEST_ASSERT(res == URI_ERROR_SYNTAX);
+		TEST_ASSERT(stateA.errorPos == input + 1);
+		TEST_ASSERT(stateA.errorCode == URI_ERROR_SYNTAX);  /* failed previously */
+
+		uriFreeUriMembersA(&uriA);
+	}
 };
 
 

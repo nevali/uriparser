@@ -1,5 +1,5 @@
 AC_PREREQ(2.61)
-AC_INIT([uriparser], [0.7.9])
+AC_INIT([uriparser], [0.8.0])
 AC_CONFIG_AUX_DIR([build-aux])
 AM_INIT_AUTOMAKE([1.10.1 foreign dist-zip dist-bzip2 no-dist-gzip subdir-objects])
 
@@ -8,6 +8,15 @@ AC_PROG_CC
 AC_PROG_CXX
 AC_PROG_LIBTOOL
 AC_HEADER_STDC
+
+
+## Toggle build options specific to Windows
+case "${host}" in
+	*-*-mingw*) WIN32="yes" ;;
+	*cygwin*) WIN32="yes" ;;
+	*) WIN32="no" ;;
+esac
+AM_CONDITIONAL([WIN32], test "$WIN32" = "yes")
 
 
 ## Check for wprintf
